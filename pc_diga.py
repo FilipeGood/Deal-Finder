@@ -4,11 +4,13 @@ import requests
 import re
 import webbrowser
 import pandas as pd
+from datetime import date
+
 
 url = "https://www.pcdiga.com/catalogo-pcdiga/imagem/monitores/mon_polegadas-35-34-32-31_5-28-27-25-24_5-24?product_list_order=price"
 current_page = 1
 # https://www.pcdiga.com/catalogo-pcdiga/imagem/monitores/mon_polegadas-35-34-32-31_5-28-27-25-24_5-24?p=1&product_list_order=price
-df = pd.DataFrame(columns=['Title', 'Current Price', 'Old Price', 'Diff', 'url'])
+df = pd.DataFrame(columns=['Title', 'Current Price', 'Old Price', 'Diff', 'url', 'Date'])
 
 for i in range(6):
     url = 'https://www.pcdiga.com/catalogo-pcdiga/imagem/monitores/mon_polegadas-35-34-32-31_5-28-27-25-24_5-24?p='+str(i+1)+'&product_list_order=price'
@@ -40,18 +42,19 @@ for i in range(6):
         if len(current_price) !=0:
             current_price_new = current_price[0].text.replace('€', '')
 
+
         if len(old_price) !=0:
             old_price_new = old_price[0].text.replace('€', '')
         
         if len(diff) !=0:
             diff_new = diff[0].text.replace('€', '')
         
-        new_entry = [[title, current_price_new, old_price_new, diff_new, url]]
-        df1 = pd.DataFrame(new_entry,  columns=['Title', 'Current Price', 'Old Price', 'Diff', 'url'])
+        new_entry = [[title, current_price_new, old_price_new, diff_new, url, date.today().strftime("%d/%m/%Y")]]
+        df1 = pd.DataFrame(new_entry,  columns=['Title', 'Current Price', 'Old Price', 'Diff', 'url', 'Date'])
         df = df.append(df1)
         print(title)
         count+=1
         
-    df.to_csv('pc_diga.csv', index=False)
+df.to_csv('pc_diga.csv', index=False,  mode='a', header=True)
     
 #t(count)
